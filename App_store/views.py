@@ -5,5 +5,9 @@ from django.contrib import messages
 # Create your views here.
 
 def store(request):
-    return render(request,'app_store/store.html')
+    products = Product.objects.all()
+    context = {
+        'products': products
+    }
+    return render(request,'app_store/store.html',context)
 

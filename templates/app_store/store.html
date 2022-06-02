@@ -26,13 +26,13 @@
     
         
     <div class="row">
-        {% for product in object_list %}
+        {% for product in products %}
         <div class="col-md-3">
             <div class="card card-product-grid">
-                <a href="./product-detail.html" class="img-wrap"> <img src="{% static 'images/items/1.jpg' %}"> </a>
+                <a href="./product-detail.html" class="img-wrap"> <img src="{{product.mainimage.url}}"> </a>
                 <figcaption class="info-wrap">
-                    <a href="./product-detail.html" class="title"></a>
-                    <div class="price mt-1"></div> <!-- price-wrap.// -->
+                    <a href="./product-detail.html" class="{{product.name}}"></a>
+                    <div class="price mt-1">{{product.price}}</div> <!-- price-wrap.// -->
                 </figcaption>
             </div>
         </div> <!-- col.// -->
