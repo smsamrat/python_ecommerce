@@ -4,5 +4,6 @@ from . import views
 
 urlpatterns = [
     path('', views.store, name='store'),
+    path('category/<str:slug>/', views.categoryfetchItem, name='category'),
 
 ]
