@@ -25,3 +25,74 @@ def addToCart(request,pk):
         order.orderItems.add(order_item[0])
         messages.success(request,'Add Product To Cart Successfully')
         return redirect('store')
+
+def cartView(request):
+    carts = Cart.objects.filter(user=request.user, purchased=False)
+    orders = Order.objects.filter(user=request.user, orderd=False)
+    if carts.exists() and orders.exists():
+        order = orders[0]
+        return render(request,'app_order/cart.html',context={'carts':carts,'order':order})
+    else:
+        messages.warning(request,"You don't have any item in your cart")
+        return redirect('store')
+
+def itemRemove(request,pk):
+    item = get_object_or_404(Product,pk=pk)
+    order_qs = Order.objects.filter(user= request.user, orderd=False)
+    if order_qs.exists():
+        order =order_qs[0]
+        if order.orderItems.filter(item=item).exists():
+            order_item = Cart.objects.filter(item=item,user= request.user, purchased=False)[0]
+            order.orderItems.remove(order_item)
+            order_item.delete()
+            messages.warning(request,'Your item removed from cart')
+            return redirect('cart_view')
+        else:
+            messages.warning(request,'Your item was not in cart')
+            return redirect('store')
+    else:
+        messages.warning(request,'Your item was not in order')
+        return redirect('store')
+
+def itemIncrease(request,pk):
+    item = get_object_or_404(Product,pk=pk)
+    order_qs = Order.objects.filter(user= request.user, orderd=False)
+    if order_qs.exists():
+        order =order_qs[0]
+        if order.orderItems.filter(item=item).exists():
+            order_item = Cart.objects.filter(item=item,user= request.user, purchased=False)[0]
+            if order_item.quantity >=1:
+                order_item.quantity +=1
+                order_item.save()
+                messages.warning(request,f"{item.name} item quantity has been increase")
+                return redirect('cart_view')
+        else:
+            messages.warning(request,f"{item.name} is not in your cart")
+            return redirect('cart_view')
+    else:
+        messages.warning(request,"Your item was not in order")
+        return redirect('store')
+
+def itemDecrease(request,pk):
+    item = get_object_or_404(Product,pk=pk)
+    order_qs = Order.objects.filter(user= request.user, orderd=False)
+    if order_qs.exists():
+        order =order_qs[0]
+        if order.orderItems.filter(item=item).exists():
+            order_item = Cart.objects.filter(item=item,user= request.user, purchased=False)[0]
+            if order_item.quantity >1:
+                order_item.quantity -=1
+                order_item.save()
+                messages.warning(request,f"{item.name} item quantity has been decrease")
+                return redirect('cart_view')
+            else:
+                order.orderItems.remove(order_item)
+                order_item.delete()
+                messages.warning(request, f"{item.name} item has been remove  from cart")
+                return redirect('cart_view')
+        else:
+            messages.warning(request,f"{item.name} is not in your cart")
+            return redirect('cart_view')
+    else:
+        messages.warning(request,"Your item was not in order")
+        return redirect('store')
