@@ -64,3 +64,40 @@ class User(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
+
+class Profile(models.Model):
+    user= models.OneToOneField(User, on_delete=models.CASCADE , related_name='profile')
+    username = models.CharField(max_length=200, blank=True)
+    full_name = models.CharField(max_length=200, blank=True)
+    address_1 = models.TextField(blank=True)
+    city = models.CharField(max_length=40, blank=True)
+    country = models.CharField(max_length=40, blank=True)
+    zipcode = models.CharField(max_length=200, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user}"
+
+    def is_fully_filled(self):
+        fields_names = [f.name for f in self._meta.get_fields()]
+
+        for field_name in fields_names:
+            value = getattr(self, field_name)
+            if value is None or value == '':
+                return False
+
+        return True
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
+
+class ProfilePic(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE , related_name='profile_pic')
+    images = models.ImageField(upload_to="profile_pics")

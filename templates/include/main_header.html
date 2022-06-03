@@ -41,7 +41,8 @@
 							<small class="title text-muted">Welcome To!</small>
 							<div>
 								{% if request.user.is_authenticated %}
-								<a href="{% url 'logout' %}"> Logout</a>
+								<a href="{% url 'logout' %}"> Logout</a> |
+								<a href="{% url 'custom_profile' %}"> User Profile</a>
 								{% else %}
 								<a href="{% url 'login' %}">Sign in</a> <span class="dark-transp"> | </span>
 								<a href="{% url 'signup' %}"> Register</a>
